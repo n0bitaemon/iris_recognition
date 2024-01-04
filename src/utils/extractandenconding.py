@@ -126,16 +126,14 @@ def matchingTemplate(template_extr, mask_extr, template_dir, threshold=0.38):
         return -1
 
     # use every cores to calculate Hamming distances
-    # args = zip(
-    #     sorted(listdir(template_dir)),
-    #     repeat(template_extr),
-    #     repeat(mask_extr),
-    #     repeat(template_dir),
-    # )
-    # with Pool(processes=cpu_count()) as pools:
-    #     result_list = pools.starmap(matchingPool, args)
-    
-    matchingPool(sorted(listdir(template_dir)), repeat(template_extr), repeat(mask_extr), repeat(template_dir))
+    args = zip(
+        sorted(listdir(template_dir)),
+        repeat(template_extr),
+        repeat(mask_extr),
+        repeat(template_dir),
+    )
+    with Pool(processes=cpu_count()) as pools:
+        result_list = pools.starmap(matchingPool, args)
 
     filenames = [result_list[i][0] for i in range(len(result_list))]
     hm_dists = np.array([result_list[i][1] for i in range(len(result_list))])
