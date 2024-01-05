@@ -147,6 +147,8 @@ def segment(eyeim):
     """
         Segment the iris from the image
     """
+    segmented_img = eyeim
+    
     # Using daugman intefro-differential to the the iris
     # search the inner and outer bounds
     rowp, colp, rp = searchInnerBound(eyeim)
@@ -162,9 +164,16 @@ def segment(eyeim):
     cirpupil = [rowp, colp, rp]
     ciriris = [row, col, r]
 
+    # Crop iris by circles
+    mask1 = np.zeros_like(segmented_img)
+    mask1 = cv2.circle(mask1, (colp, rowp), rp, (255, 255, 255), -1)
+    mask2 = np.zeros_like(segmented_img)
+    mask2 = cv2.circle(mask2, (col, row), r, (255, 255, 255), -1)
+    mask = cv2.subtract(mask2, mask1)
+    segmented_img = cv2.bitwise_and(segmented_img, segmented_img, mask=mask)
 
     # cut iris image
-    imsz = eyeim.shape
+    imsz = segmented_img.shape
     irl = np.round(row - r).astype(int)
     iru = np.round(row + r).astype(int)
     icl = np.round(col - r).astype(int)
@@ -177,23 +186,11 @@ def segment(eyeim):
         iru = imsz[0] - 1
     if icu >= imsz[1]:
         icu = imsz[1] - 1
-    imageiris = eyeim[irl: iru + 1, icl: icu + 1]
+    segmented_img = segmented_img[irl: iru + 1, icl: icu + 1]
 
-    # Crop image to circle
-    # heigh, width = imageiris.shape
-    # mask = np.zeros((heigh, width), np.uint8)
-    # circle_img = cv2.circle(mask, (i[0], i[1]), i[2], (255, 255, 255), thickness=-1)
-    # masked_data = cv2.bitwise_and(imageiris, imageiris, mask=circle_img)
-    # _, thresh = cv2.threshold(mask, 1, 255, cv2.THRESH_BINARY)
-    # contours = cv2.findContours(thresh, cv2.RETR)
-    
-    # Draw
-    # cv2.imshow('Iris image', imageiris)
-    # cv2.waitKey(0)
+    return segmented_img, cirpupil, ciriris
 
-    return imageiris, cirpupil, ciriris
-
-def daugman_normalizaiton(image, height, width, r_in, r_out):       # Daugman归一化，输入为640*480,输出为width*height
+def daugman_normalization(image, height, width, r_in, r_out):
     thetas = np.arange(0, 2 * np.pi, 2 * np.pi / width)  # Theta values
     r_out = r_in + r_out
     # Create empty flatten image
@@ -220,3 +217,12 @@ def daugman_normalizaiton(image, height, width, r_in, r_out):       # Daugman归
 
             flat[j][i] = color
     return flat  # liang
+
+def feature_extraction(image):
+    g_kernel = cv2.getGaborKernel((27, 27), 8.0, np.pi/4, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+    filtered_img = cv2.filter2D(image, cv2.CV_8UC3, g_kernel)
+
+    h, w = g_kernel.shape[:2]
+    g_kernel = cv2.resize(g_kernel, (3*w, 3*h), interpolation=cv2.INTER_CUBIC)
+
+    return filtered_img
