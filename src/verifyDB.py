@@ -1,6 +1,6 @@
 from utils.extractandenconding import extractFeature, matchingTemplate
 
-template_dir = 'iris_recognition\\src\\templates\\CASIA1'
+template_dir = 'iris_recognition\\src\\templates\\CASIA1\\'
 filename ='iris_recognition\\src\\tests\\001_1_1.jpg'
 threshold = 0.37
 

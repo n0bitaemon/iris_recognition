@@ -4,7 +4,6 @@ from glob import glob
 from tqdm import tqdm
 from time import time
 from scipy.io import savemat
-from multiprocessing import cpu_count, Pool
 from utils.extractandenconding import extractFeature
 
 if __name__ == '__main__':
@@ -23,7 +22,7 @@ if __name__ == '__main__':
     for idx, file in enumerate(files):
         print("#{}. Process file {}... => ".format(idx, file), end='')
         try:
-            template, mask, _ = extractFeature(file, multiprocess=False)
+            template, mask, _ = extractFeature(file)
             basename = os.path.basename(file)
             out_file = os.path.join(template_dir, "%s.mat" % (basename))
             savemat(out_file, mdict={'template': template, 'mask': mask})

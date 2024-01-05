@@ -1,7 +1,6 @@
 from os import listdir
 from utils.imgutils import segment, normalize
 from cv2 import imread
-from multiprocessing import Pool, cpu_count
 from itertools import repeat
 from fnmatch import filter
 import numpy as np
@@ -80,7 +79,7 @@ def gaborconvolve_f(img, minw_length, mult, sigma_f):
 ##########################################################################
 # Function to extract the feature for the matching process
 ##########################################################################
-def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=False):
+def extractFeature(img_filename):
     """
     Extract features from an iris image
     """
@@ -94,8 +93,9 @@ def extractFeature(img_filename, eyelashes_threshold=80, multiprocess=False):
 
     #  segmentation
     im = imread(img_filename, 0)
-    ciriris, cirpupil, imwithnoise = segment(im, eyelashes_threshold,
-                                    multiprocess)
+    # ciriris, cirpupil, imwithnoise = segment(im, eyelashes_threshold)
+    ciriris, cirpupil = segment(im)
+
 
     # normalization
     arr_polar, arr_noise = normalize(imwithnoise, ciriris[1],  ciriris[0], ciriris[2],
@@ -125,15 +125,18 @@ def matchingTemplate(template_extr, mask_extr, template_dir, threshold=0.38):
     if n_files == 0:
         return -1
 
-    # use every cores to calculate Hamming distances
-    args = zip(
-        sorted(listdir(template_dir)),
-        repeat(template_extr),
-        repeat(mask_extr),
-        repeat(template_dir),
-    )
-    with Pool(processes=cpu_count()) as pools:
-        result_list = pools.starmap(matchingPool, args)
+    # # use every cores to calculate Hamming distances
+    # args = zip(
+    #     sorted(listdir(template_dir)),
+    #     repeat(template_extr),
+    #     repeat(mask_extr),
+    #     repeat(template_dir),
+    # )
+    # with Pool(processes=cpu_count()) as pools:
+    #     result_list = pools.starmap(matchingPool, args)
+    result_list = []
+    for i in sorted(listdir(template_dir)):
+        result_list.append(matchingPool(i, template_extr, mask_extr, template_dir))
 
     filenames = [result_list[i][0] for i in range(len(result_list))]
     hm_dists = np.array([result_list[i][1] for i in range(len(result_list))])
