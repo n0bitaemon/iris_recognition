@@ -1,5 +1,5 @@
-from os import listdir
 from utils.imgutils import segment, daugman_normalization, feature_extraction
+from scipy.spatial import distance
 import cv2
 
 def extractFeature(img_filename):
@@ -15,9 +15,15 @@ def extractFeature(img_filename):
     filtered_iris = feature_extraction(normalized_iris)
 
     #Draw image
-    cv2.imshow('segmented iris', segmented_iris)
-    cv2.imshow('normalized iris', normalized_iris)
-    cv2.imshow('extracted iris', filtered_iris)
-    cv2.waitKey(0)
+    # cv2.imshow('segmented iris', segmented_iris)
+    # cv2.imshow('normalized iris', normalized_iris)
+    # cv2.imshow('extracted iris', filtered_iris)
+    # cv2.waitKey(0)
     
-    return
+    return filtered_iris.ravel()
+
+def matchingTemplate(code1, code2, threshold=0.15):
+    hamming_distance = distance.hamming(code1, code2)
+    if(hamming_distance < threshold):
+        return True
+    return False

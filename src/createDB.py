@@ -1,9 +1,6 @@
-import argparse
 import os
+import numpy as np
 from glob import glob
-from tqdm import tqdm
-from time import time
-from scipy.io import savemat
 from utils.extractandenconding import extractFeature
 
 if __name__ == '__main__':
@@ -22,10 +19,10 @@ if __name__ == '__main__':
     for idx, file in enumerate(files):
         print("#{}. Process file {}... => ".format(idx, file), end='')
         try:
-            template, mask, _ = extractFeature(file)
+            code = extractFeature(file)
             basename = os.path.basename(file)
-            out_file = os.path.join(template_dir, "%s.mat" % (basename))
-            savemat(out_file, mdict={'template': template, 'mask': mask})
+            out_file = os.path.join(template_dir, "%s.npy" % (basename))
+            np.save(out_file, code)
             print('Success')
             n_success += 1
         except Exception as error:

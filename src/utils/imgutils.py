@@ -1,7 +1,5 @@
 
 from scipy import signal
-from scipy.ndimage import convolve
-from skimage.transform import radon
 import numpy as np
 import cv2
 
