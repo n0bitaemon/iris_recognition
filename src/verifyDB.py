@@ -1,30 +1,24 @@
 import os
 from glob import glob
 import numpy as np
-from utils.extractandenconding import matchingTemplate, extractFeature
+from utils.extractandenconding import extractFeature
+from utils.imgutils import hamming_distance
 
 
-if __name__ == '__main__':
-    filename = 'iris_recognition\\src\\tests\\002_1_1.jpg'
-    template_dir = 'iris_recognition\\src\\templates\\CASIA1'
-    threshold = 0.15
-    
+def verify(filename, database, threshold):
     print('\tStart verifying {}\n'.format(filename))
 
-    if not os.path.exists(template_dir):
-        print('No match')
-        exit()
-
-    files = glob(os.path.join(template_dir, "*_1_*.jpg.npy"))
-    n_files = len(files)
-    print("N# of files which we are extracting features", n_files)
-
+    code = extractFeature(filename)
     match_arr = []
-    for file in files:
-        print('Verifyting {}...'.format(file))
-        code1 = np.load(file)
-        code2 = extractFeature(filename)
-        if(matchingTemplate(code1, code2, threshold=0.125)):
-            match_arr.append(file)
+    for record in database.items():
+        print('Verifyting {}...'.format(record[0]))
+        code_in_db = record[1]
+        hdis = hamming_distance(code, code_in_db)
+        if(hdis < threshold):
+            match_arr.append((record[0], hdis))
 
-    print(match_arr)
+    return match_arr
+
+    
+
+

@@ -1,5 +1,4 @@
 from utils.imgutils import segment, daugman_normalization, feature_extraction
-from scipy.spatial import distance
 import cv2
 
 def extractFeature(img_filename):
@@ -10,6 +9,8 @@ def extractFeature(img_filename):
 
     # normalization
     normalized_iris = daugman_normalization(segmented_iris, 60, 360, cirpupil[2], ciriris[2]-cirpupil[2])
+    normalized_iris = cv2.cvtColor(normalized_iris, cv2.COLOR_BGR2GRAY)
+    normalized_iris = cv2.equalizeHist(normalized_iris)
 
     #  feature encoding
     filtered_iris = feature_extraction(normalized_iris)
@@ -21,9 +22,3 @@ def extractFeature(img_filename):
     # cv2.waitKey(0)
     
     return filtered_iris.ravel()
-
-def matchingTemplate(code1, code2, threshold=0.15):
-    hamming_distance = distance.hamming(code1, code2)
-    if(hamming_distance < threshold):
-        return True
-    return False

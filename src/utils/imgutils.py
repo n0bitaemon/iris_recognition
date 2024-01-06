@@ -1,6 +1,7 @@
 
 from scipy import signal
 import numpy as np
+from scipy.spatial import distance
 import cv2
 
 def searchInnerBound(img):
@@ -224,3 +225,6 @@ def feature_extraction(image):
     g_kernel = cv2.resize(g_kernel, (3*w, 3*h), interpolation=cv2.INTER_CUBIC)
 
     return filtered_img
+
+def hamming_distance(code1, code2):
+    return distance.hamming(code1, code2)

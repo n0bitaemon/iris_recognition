@@ -5,7 +5,7 @@ import numpy as np
 
 
 img1 = 'iris_recognition\\src\\tests\\002_1_1.jpg'
-img2 = 'iris_recognition\\CASIA1\\9\\009_1_1.jpg'
+img2 = 'iris_recognition\\CASIA1\\5\\005_1_2.jpg'
 
 x1 = extractFeature(img1)
 x2 = extractFeature(img2)
