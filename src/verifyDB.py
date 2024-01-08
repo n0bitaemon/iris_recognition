@@ -11,7 +11,7 @@ def verify(filename, database, threshold):
     code = extractFeature(filename)
     match_arr = []
     for record in database.items():
-        print('Verifyting {}...'.format(record[0]))
+        # print('Verifyting {}...'.format(record[0]))
         code_in_db = record[1]
         hdis = hamming_distance(code, code_in_db)
         if(hdis < threshold):

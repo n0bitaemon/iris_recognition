@@ -1,32 +1,40 @@
 import os
-import numpy as np
+import pickle
 from glob import glob
 from utils.extractandenconding import extractFeature
 
-def createDB(dateset_dir, template_dir):
+def createDB(dateset_dir, template_dir, db_filename):
     database = {}
-
     if not os.path.exists(template_dir):
         print("makedirs", template_dir)
         os.makedirs(template_dir)
 
-    files = glob(os.path.join(dateset_dir, "*_1_*.jpg"))
+    files = glob(os.path.join(dateset_dir, "*.jpg"))
     n_files = len(files)
     print("N# of files which we are extracting features", n_files)
 
     n_success = 0
     for idx, file in enumerate(files):
-        print("#{}. Process file {}... => ".format(idx, file), end='')
+        basename = os.path.basename(file)
+        print("#{}. Process file {}... => ".format(idx, basename), end='')
         try:
             code = extractFeature(file)
-            # basename = os.path.basename(file)
             # out_file = os.path.join(template_dir, "%s.npy" % (basename))
             # np.save(out_file, code)
             database[file] = code
             print('Success')
             n_success += 1
         except Exception as error:
+            os.remove(file)
             print('Error:', error)
+            print('Removed {}'.format(file))
             pass
     print("N# of succession:", n_success)
+
+    # Save to file
+
+    with open(db_filename, 'wb') as db_file:
+        pickle.dump(database, db_file)
+        print('Saved database to file {}'.format(db_filename))
+
     return database
