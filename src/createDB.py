@@ -3,13 +3,10 @@ import pickle
 from glob import glob
 from utils.extractandenconding import extractFeature
 
-def createDB(dateset_dir, template_dir, db_filename):
+def createDB(dataset_dir, template_dir, db_filename):
     database = {}
-    if not os.path.exists(template_dir):
-        print("makedirs", template_dir)
-        os.makedirs(template_dir)
 
-    files = glob(os.path.join(dateset_dir, "*.jpg"))
+    files = glob(os.path.join(dataset_dir, "*.jpg"))
     n_files = len(files)
     print("N# of files which we are extracting features", n_files)
 

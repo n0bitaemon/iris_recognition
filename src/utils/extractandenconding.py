@@ -1,4 +1,4 @@
-from utils.imgutils import segment, daugman_normalization, feature_extraction
+from utils.imgutils import segment, daugman_normalization, feature_encoding
 import cv2
 
 def extractFeature(img_filename):
@@ -13,12 +13,15 @@ def extractFeature(img_filename):
     normalized_iris = cv2.equalizeHist(normalized_iris)
 
     #  feature encoding
-    filtered_iris = feature_extraction(normalized_iris)
+    encoded_iris = feature_encoding(normalized_iris)
 
     #Draw image
+    # cv2.imshow('initial image', im)
+    # cv2.circle(im, (cirpupil[1], cirpupil[0]), cirpupil[2], (255, 0, 0), 1)
+    # cv2.circle(im, (ciriris[1], ciriris[0]), ciriris[2], (255, 0, 0), 1)
+    # cv2.imshow('segmented iris image', im)
     # cv2.imshow('segmented iris', segmented_iris)
     # cv2.imshow('normalized iris', normalized_iris)
-    # cv2.imshow('extracted iris', filtered_iris)
     # cv2.waitKey(0)
     
-    return filtered_iris.ravel()
+    return encoded_iris

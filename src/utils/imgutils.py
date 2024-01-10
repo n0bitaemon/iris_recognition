@@ -3,7 +3,9 @@ from scipy import signal
 import numpy as np
 from scipy.spatial import distance
 import cv2
+import math
 
+##### SEGMENTATION #####
 def searchInnerBound(img):
     """
     Searching of the boundary (inner) of the iris
@@ -189,6 +191,7 @@ def segment(eyeim):
 
     return segmented_img, cirpupil, ciriris
 
+##### NORMALIZATION #####
 def daugman_normalization(image, height, width, r_in, r_out):
     thetas = np.arange(0, 2 * np.pi, 2 * np.pi / width)  # Theta values
     r_out = r_in + r_out
@@ -217,14 +220,15 @@ def daugman_normalization(image, height, width, r_in, r_out):
             flat[j][i] = color
     return flat  # liang
 
-def feature_extraction(image):
+##### FEATURE ENCODING #####
+def feature_encoding(image):
     g_kernel = cv2.getGaborKernel((27, 27), 8.0, np.pi/4, 10.0, 0.5, 0, ktype=cv2.CV_32F)
     filtered_img = cv2.filter2D(image, cv2.CV_8UC3, g_kernel)
 
-    h, w = g_kernel.shape[:2]
-    g_kernel = cv2.resize(g_kernel, (3*w, 3*h), interpolation=cv2.INTER_CUBIC)
+    # h, w = g_kernel.shape[:2]
+    # g_kernel = cv2.resize(g_kernel, (3*w, 3*h), interpolation=cv2.INTER_CUBIC)
+    return filtered_img.ravel()
 
-    return filtered_img
-
+##### HAMMING DISTANCE #####
 def hamming_distance(code1, code2):
     return distance.hamming(code1, code2)
